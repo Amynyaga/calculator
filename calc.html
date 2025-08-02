@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Simple Calculator</title>
+<link rel="manifest" href="manifest.json" />
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjs@11.11.0/lib/browser/math.js"></script>
+<style>
+  body {
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; margin: 0;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    font-family: 'Pacifico', cursive;
+    color: #fff;
+  }
+  .calculator {
+    background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 20px;
+    box-shadow: 0 0 20px rgba(255,105,180,0.8);
+    backdrop-filter: blur(10px);
+  }
+  .display {
+    width: 300px; height: 50px; background: rgba(0,0,0,0.3); color: #fff;
+    text-align: right; font-size: 24px; padding: 10px; border-radius: 10px;
+    margin-bottom: 10px; overflow-x: auto;
+    transition: transform 0.2s;
+  }
+  .keys {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+  }
+  button {
+    padding: 14px; font-size: 16px; border: none; border-radius: 10px;
+    background: rgba(255,255,255,0.2); color: #fff; cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    backdrop-filter: blur(5px);
+  }
+  button:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+  button.operator { background: #ff69b4; }
+  button.equal { background: #ba68c8; }
+  button.clear { background: #e57373; }
+  .history {
+    max-height: 80px; overflow-y: auto; margin-bottom: 10px;
+    background: rgba(255,255,255,0.1); border-radius: 10px; padding: 5px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <div class="history" id="history"></div>
+  <div id="display" class="display">0</div>
+  <div class="keys">
+    <button onclick="press('(')">(</button>
+    <button onclick="press(')')">)</button>
+    <button onclick="press('pi')">π</button>
+    <button onclick="press('e')">e</button>
+    <button class="clear" onclick="clearDisplay()">C</button>
+
+    <button onclick="press('7')">7</button>
+    <button onclick="press('8')">8</button>
+    <button onclick="press('9')">9</button>
+    <button onclick="press('/')">÷</button>
+    <button onclick="sqrt()">√</button>
+
+    <button onclick="press('4')">4</button>
+    <button onclick="press('5')">5</button>
+    <button onclick="press('6')">6</button>
+    <button onclick="press('*')">×</button>
+    <button onclick="press('^')">^</button>
+
+    <button onclick="press('1')">1</button>
+    <button onclick="press('2')">2</button>
+    <button onclick="press('3')">3</button>
+    <button onclick="press('-')">−</button>
+    <button onclick="press('log(')">log</button>
+
+    <button onclick="press('0')">0</button>
+    <button onclick="press('.')">.</button>
+    <button onclick="calculate()" class="equal">=</button>
+    <button onclick="press('+')">+</button>
+    <button onclick="press('sin(')">sin</button>
+
+    <button onclick="press('cos(')">cos</button>
+    <button onclick="press('tan(')">tan</button>
+    <button onclick="press('ln(')">ln</button>
+    <button onclick="del()">⌫</button>
+  </div>
+</div>
+
+<script>
+  let display = document.getElementById('display');
+  let history = document.getElementById('history');
+  let current = '';
+
+  function vibrate() {
+    if(navigator.vibrate) navigator.vibrate(50);
+  }
+
+  function press(value) {
+    vibrate();
+    current += value;
+    display.textContent = current;
+  }
+
+  function calculate() {
+    vibrate();
+    try {
+      let result = math.evaluate(current);
+      history.innerHTML += current + ' = ' + result + '<br>';
+      current = result.toString();
+      display.textContent = current;
+    } catch {
+      current = 'Error';
+      display.textContent = current;
+    }
+  }
+
+  function clearDisplay() {
+    vibrate();
+    current = '';
+    display.textContent = '0';
+  }
+
+  function sqrt() {
+    vibrate();
+    current += 'sqrt(';
+    display.textContent = current;
+  }
+
+  function del() {
+    vibrate();
+    current = current.slice(0, -1);
+    display.textContent = current || '0';
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+</body>
+</html>
